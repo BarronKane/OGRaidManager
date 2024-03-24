@@ -1,0 +1,15 @@
+[package]
+name = "OG-Raid-Manager"
+version = "0.1.0"
+authors = [ "Lance Wallis <walance@pvas.me>"]
+edition = "2021"
+
+[[bin]]
+name = "raid-manager"
+path = "raid-manager.rs"
+
+[dependencies]
+tracing = "0.1.37"
+tracing-subscriber = "0.3.17"
+
+fusion-util = { path = "../../lib/fusion-util" }
