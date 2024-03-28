@@ -1,5 +1,6 @@
 mod commands;
-mod raid_team;
+pub mod raid_team;
+mod modals;
 
 use serenity::async_trait;
 use serenity::builder::{CreateAttachment, CreateEmbed, CreateEmbedFooter, CreateMessage};
@@ -51,7 +52,7 @@ async fn scoped_main() {
     // FrameworkOptions contains all of poise's configuration option in one struct
     // Every option can be omitted to use its default value
     let options = poise::FrameworkOptions {
-        commands: vec![commands::help()],
+        commands: vec![commands::help(), commands::show_raid_team_info()],
         prefix_options: poise::PrefixFrameworkOptions {
             prefix: Some("/".into()),
             edit_tracker: Some(Arc::new(poise::EditTracker::for_timespan(
