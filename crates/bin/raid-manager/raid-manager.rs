@@ -1,6 +1,7 @@
 mod commands;
 pub mod raid_team;
 mod modals;
+mod raid_team_io;
 
 use serenity::async_trait;
 use serenity::builder::{CreateAttachment, CreateEmbed, CreateEmbedFooter, CreateMessage};

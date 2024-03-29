@@ -5,7 +5,7 @@ use poise::CreateReply;
 use futures::{Stream, StreamExt};
 use std::fmt::Write as _;
 
-use crate::{Context, Error};
+use crate::{raid_team_io, Context, Error};
 
 async fn autocomplete_name<'a>(
     _ctx: Context<'_>,
@@ -43,12 +43,36 @@ pub async fn show_raid_team_info(
     #[autocomplete = "autocomplete_name"]
     command: Option<String>,
 ) -> Result<(), Error> {
-    ctx.send( 
-        CreateReply::default()
-            .embed(crate::raid_team::create_team_embed())
-            .components(vec![CreateActionRow::Buttons(vec![crate::raid_team::create_app_button()])])
-    )
-    .await?;
+    let in_teams = raid_team_io::read_raid_teams();
+
+    match in_teams {
+        Ok(teams) => {
+            let (request_embed, is_needed) = crate::raid_team::create_team_requests_embed(teams.clone());
+
+            let reply: CreateReply;
+
+            if is_needed == true {
+                reply = CreateReply::default()
+                    .embed(crate::raid_team::create_team_info_embed(teams.clone()))
+                    .embed(crate::raid_team::create_team_Schedule_embed(teams.clone()))
+                    .embed(crate::raid_team::create_team_status_embed(teams.clone()))
+                    .embed(request_embed.unwrap());
+            } else {
+                reply = CreateReply::default()
+                    .embed(crate::raid_team::create_team_info_embed(teams.clone()))
+                    .embed(crate::raid_team::create_team_Schedule_embed(teams.clone()))
+                    .embed(crate::raid_team::create_team_status_embed(teams.clone()))
+            }
+            
+            ctx.send(reply).await?;
+        },
+        Err(e) => {
+            ctx.send(
+                CreateReply::default()
+                    .content("Something has gone horribly wrong. Message FIX!")
+            ).await?;
+        }
+    }
 
     Ok(())
 }
