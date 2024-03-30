@@ -81,12 +81,104 @@ impl CreateRaidTeam {
 fn scheck(s: Option<String>) -> String {
     match s {
         Some(o) => {
+            return o;
+        },
+        None => return "".to_string(),
+    }
+}
+
+fn subject_scheck(subject: String, s: Option<String>) -> String {
+    match s {
+        Some(o) => {
+            let mut in_subject = subject;
+            in_subject.push_str(":");
+
+            let mut out = String::new();
+            out.push_str(boldscheck(Some(in_subject)).as_str());
+            out.push(' ');
+            out.push_str(&o);
+            out.push_str("\n");
+            return out;
+        },
+        None => return "".to_string(),
+    }
+}
+
+fn nlscheck(s: Option<String>) -> String {
+    match s {
+        Some(o) => {
             let mut out = o;
             out.push_str("\n");
             return out;
         },
         None => return " \n".to_string(),
     }
+}
+
+fn boldscheck(s: Option<String>) -> String {
+    match s {
+        Some(o) => {
+            let mut out: String = "**".to_string();
+            out.push_str(&o);
+            out.push_str("**");
+            return out;
+        },
+        None => return "".to_string(),
+    }
+}
+
+fn underlinescheck(s: Option<String>) -> String {
+    match s {
+        Some(o) => {
+            let mut out: String = "__".to_string();
+            out.push_str(&o);
+            out.push_str("__");
+            return out;
+        },
+        None => return "".to_string(),
+    }
+}
+
+pub fn create_team_info_aggregate(teams: Vec<CreateRaidTeam>) -> CreateEmbed {
+    
+    let mut fields: Vec<(String, String, bool)> = Vec::new();
+    
+    for team in teams{
+
+        let mut body = String::new();
+
+        let mut lead_aggregate = scheck(team.0.raid_lead.clone());
+        lead_aggregate.push_str(" **|** ");
+        lead_aggregate.push_str(scheck(team.0.raid_colead.clone()).as_str());
+
+        body.push_str(&subject_scheck("Lead | Colead".to_string(), Some(lead_aggregate)));
+        //body.push_str(&subject_scheck("Raid Colead".to_string(), team.0.raid_colead));
+
+        let mut day_aggregate = scheck(team.0.raid_days.clone());
+        day_aggregate.push_str(" - ");
+        day_aggregate.push_str(scheck(team.0.raid_time.clone()).as_str());
+
+        body.push_str(&subject_scheck("Raiding Days".to_string(), Some(day_aggregate)));
+        //body.push_str(&subject_scheck("Raid Time".to_string(), team.0.raid_time));
+
+        let mut status_agregate = scheck(team.0.status.clone());
+        status_agregate.push_str(" - ");
+        status_agregate.push_str(scheck(team.0.achievement.clone()).as_str());
+
+        //body.push_str(&subject_scheck("Achievement".to_string(), team.0.achievement));
+        body.push_str(&subject_scheck("Status".to_string(), Some(status_agregate)));
+
+        fields.push((
+            underlinescheck(team.0.team_name),
+            body, 
+            false
+        ));
+    }
+
+    CreateEmbed::new()
+        .title("Old Gods Raid Group Info")
+        .color(Colour::from_rgb(166, 0, 255))
+        .fields(fields)
 }
 
 pub fn create_team_info_embed(teams: Vec<CreateRaidTeam>) -> CreateEmbed {
@@ -96,14 +188,14 @@ pub fn create_team_info_embed(teams: Vec<CreateRaidTeam>) -> CreateEmbed {
     let mut team_coleads: String = String::new();
 
     for team in teams {
-        team_names.push_str(scheck(team.0.team_name).as_str());
-        team_leads.push_str(scheck(team.0.raid_lead).as_str());
-        team_coleads.push_str(scheck(team.0.raid_colead).as_str());
+        team_names.push_str(nlscheck(team.0.team_name).as_str());
+        team_leads.push_str(nlscheck(team.0.raid_lead).as_str());
+        team_coleads.push_str(nlscheck(team.0.raid_colead).as_str());
     }    
 
     CreateEmbed::new()
         .title("Old Gods Raid Group Info")
-        .color(Colour::from_rgb(166, 0, 255)).title("Old Gods Raid Groups Info")
+        .color(Colour::from_rgb(166, 0, 255))
         .field("Team Name", team_names, true)
         .field("Raid Lead", team_leads, true)
         .field("Raid Colead", team_coleads, true)
@@ -116,9 +208,9 @@ pub fn create_team_Schedule_embed(teams: Vec<CreateRaidTeam>) -> CreateEmbed {
     let mut team_times: String = String::new();
 
     for team in teams {
-        team_names.push_str(scheck(team.0.team_name).as_str());
-        team_days.push_str(scheck(team.0.raid_days).as_str());
-        team_times.push_str(scheck(team.0.raid_time).as_str());
+        team_names.push_str(nlscheck(team.0.team_name).as_str());
+        team_days.push_str(nlscheck(team.0.raid_days).as_str());
+        team_times.push_str(nlscheck(team.0.raid_time).as_str());
     }
 
     let mut info_embed = CreateEmbed::new();
@@ -139,9 +231,9 @@ pub fn create_team_status_embed(teams: Vec<CreateRaidTeam>) -> CreateEmbed {
     let mut team_status: String = String::new();
 
     for team in teams {
-        team_names.push_str(scheck(team.0.team_name).as_str());
-        team_achievement.push_str(scheck(team.0.achievement).as_str());
-        team_status.push_str(scheck(team.0.status).as_str());
+        team_names.push_str(nlscheck(team.0.team_name).as_str());
+        team_achievement.push_str(nlscheck(team.0.achievement).as_str());
+        team_status.push_str(nlscheck(team.0.status).as_str());
     }    
 
     CreateEmbed::new()
@@ -163,7 +255,7 @@ pub fn create_team_requests_embed(teams: Vec<CreateRaidTeam>) -> (Option<CreateE
         if team.0.trial_requests.is_some() {
             is_needed = true;
             
-            fields.push((scheck(team.0.team_name), scheck(team.0.trial_requests), false));
+            fields.push((nlscheck(team.0.team_name), nlscheck(team.0.trial_requests), false));
         }
     }   
 

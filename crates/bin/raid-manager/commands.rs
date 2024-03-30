@@ -53,15 +53,11 @@ pub async fn show_raid_team_info(
 
             if is_needed == true {
                 reply = CreateReply::default()
-                    .embed(crate::raid_team::create_team_info_embed(teams.clone()))
-                    .embed(crate::raid_team::create_team_Schedule_embed(teams.clone()))
-                    .embed(crate::raid_team::create_team_status_embed(teams.clone()))
+                    .embed(crate::raid_team::create_team_info_aggregate(teams.clone()))
                     .embed(request_embed.unwrap());
             } else {
                 reply = CreateReply::default()
-                    .embed(crate::raid_team::create_team_info_embed(teams.clone()))
-                    .embed(crate::raid_team::create_team_Schedule_embed(teams.clone()))
-                    .embed(crate::raid_team::create_team_status_embed(teams.clone()))
+                    .embed(crate::raid_team::create_team_info_aggregate(teams.clone()))
             }
             
             ctx.send(reply).await?;
