@@ -54,10 +54,12 @@ pub async fn show_raid_team_info(
             if is_needed == true {
                 reply = CreateReply::default()
                     .embed(crate::raid_team::create_team_info_aggregate(teams.clone()))
-                    .embed(request_embed.unwrap());
+                    .embed(request_embed.unwrap())
+                    .components(vec![CreateActionRow::Buttons(vec![crate::raid_team::create_app_button()])]);
             } else {
                 reply = CreateReply::default()
                     .embed(crate::raid_team::create_team_info_aggregate(teams.clone()))
+                    .components(vec![CreateActionRow::Buttons(vec![crate::raid_team::create_app_button()])]);
             }
             
             ctx.send(reply).await?;

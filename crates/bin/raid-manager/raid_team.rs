@@ -274,6 +274,6 @@ pub fn create_team_requests_embed(teams: Vec<CreateRaidTeam>) -> (Option<CreateE
 
 
 pub fn create_app_button() -> CreateButton {
-    CreateButton::new("app_button")
+    CreateButton::new("application_button")
         .label("Raid Application")
 }

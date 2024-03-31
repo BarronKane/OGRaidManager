@@ -2,6 +2,7 @@ mod commands;
 pub mod raid_team;
 mod modals;
 mod raid_team_io;
+mod raid_application;
 
 use serenity::async_trait;
 use serenity::builder::{CreateAttachment, CreateEmbed, CreateEmbedFooter, CreateMessage};
@@ -9,7 +10,13 @@ use serenity::model::channel::Message;
 use serenity::model::gateway::Ready;
 use serenity::model::Timestamp;
 use serenity::prelude::*;
-use serenity::all::GatewayIntents;
+use serenity::all::{CreateInteractionResponse, GatewayIntents};
+use serenity::all::Interaction;
+use serenity::model::id;
+
+use serenity::http::Http;
+use serenity::client::Cache;
+use serenity::http::CacheHttp;
 
 use std::{
     collections::HashMap,
@@ -40,6 +47,89 @@ async fn on_error(error: poise::FrameworkError<'_, Data, Error>) {
             if let Err(e) = poise::builtins::on_error(error).await {
                 println!("Error while handling error: {}", e)
             }
+        }
+    }
+}
+
+struct Handler;
+
+#[async_trait]
+impl EventHandler for Handler {
+    async fn interaction_create(&self, ctx: serenity::all::Context, interaction: Interaction) {
+        if let Interaction::Component(interaction) = interaction {
+            // println! ("Received command interaction: {interaction:#?}");
+
+            let id = &interaction.data.custom_id;
+
+            if id == "application_button" {
+                println! ("Received raid team application request!");
+
+                let mut failed: bool = false;
+
+                let in_user = &interaction.member;
+
+                if in_user.is_none() {
+                    failed = true;
+                }
+
+                if failed == false {
+                    let id = in_user.clone().unwrap().user.id;
+                    let applications = raid_application::read_applications();
+
+                    let mut found: bool = false;
+
+                    match applications {
+                        Ok(apps) => {
+                            for app in apps {
+                                if id == app.id {
+                                    found = true;
+                                    let reply = raid_application::construct_reply(app.stage);
+
+                                    let dm_check = interaction.member.clone().unwrap().user.direct_message(ctx.http.as_ref(), 
+                                        CreateMessage::new()
+                                        .add_embed(reply)
+                                    ).await;                                    
+                                }
+                            }
+
+                            if found == false {
+                                let mut app = raid_application::RaidApplication::default();
+                                app.id = id;
+
+                                // TODO: Safe
+                                let mut in_apps = raid_application::read_applications().unwrap();
+                                in_apps.push(app.clone());
+                                raid_application::write_applications(in_apps).unwrap();
+
+                                let reply = raid_application::construct_reply(app.stage);
+                                let dm_check = interaction.member.clone().unwrap().user.direct_message(ctx.http.as_ref(), 
+                                        CreateMessage::new()
+                                        .add_embed(reply)
+                                    ).await; 
+                            }
+                        },
+                        Err(e) => {
+                            println!("Unable to read applications file: {}", e);
+                            println!("Attempting to create...");
+                            let _try = raid_application::run_raid_application();
+                            let _attempt = vec![_try];
+                            let err = raid_application::write_applications(_attempt);
+
+                            match err {
+                                Ok(e) => {
+                                    println!("Success! Try again.")
+                                },
+                                Err(e) => {
+                                    println!("Critical failure: {}", e);
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            let _ = &interaction.create_response(ctx.http.as_ref(), CreateInteractionResponse::Acknowledge).await;
         }
     }
 }
@@ -105,7 +195,7 @@ async fn scoped_main() {
                 println!("Logged in as {}", _ready.user.name);
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
                 Ok(Data {
-                    raid_teams: Vec::new()
+                    raid_teams: Vec::new(),
                 })
             })
         })
@@ -117,8 +207,9 @@ async fn scoped_main() {
     let intents =
         GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
 
-    let client = serenity::all::ClientBuilder::new(token, intents)
+    let client = serenity::all::ClientBuilder::new(token.clone(), intents)
         .framework(framework)
+        .event_handler(Handler)
         .await;
 
     client.unwrap().start().await.unwrap()
