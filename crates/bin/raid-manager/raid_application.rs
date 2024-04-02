@@ -82,6 +82,13 @@ pub fn run_raid_application() -> RaidApplication {
     RaidApplication::default()
 }
 
+pub fn create_embed(s: &str) -> CreateEmbed {
+    CreateEmbed::new()
+        .title(" ")
+        .color(Colour::from_rgb(166, 0, 255))
+        .description(s)
+}
+
 
 pub fn construct_reply(stage: ApplicationStage) -> CreateEmbed {
 
@@ -96,6 +103,37 @@ pub fn construct_reply(stage: ApplicationStage) -> CreateEmbed {
                 .color(Colour::from_rgb(166, 0, 255))
                 .description(desc);
         },
+
+        ApplicationStage::realm => {
+            let desc = "__**Character's realm:**__";
+            return create_embed(desc);
+        }
+
+        ApplicationStage::class => {
+            let desc = "__**Character's class:**__";
+            return create_embed(desc);
+        }
+
+        ApplicationStage::spec => {
+            let desc = "__**Character's specialization:**__";
+            return create_embed(desc);
+        }
+
+        ApplicationStage::avail => {
+            let desc = "__**What is your raiding availability?**__";
+            return create_embed(desc);
+        }
+
+        ApplicationStage::pref => {
+            let desc = "__**Do you have a raid team preference?**__";
+            return create_embed(desc);
+        }
+
+        ApplicationStage::under => {
+            let desc = "__**Do you understand this is an application of interest, and it is Raid leaders' option to reach out to you?**__";
+            return create_embed(desc);
+        }
+
         _ => {
             return CreateEmbed::new();
         }

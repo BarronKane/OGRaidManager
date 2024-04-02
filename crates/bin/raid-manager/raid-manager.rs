@@ -128,7 +128,6 @@ impl EventHandler for Handler {
 
                 }
             }
-
             let _ = &interaction.create_response(ctx.http.as_ref(), CreateInteractionResponse::Acknowledge).await;
         }
     }

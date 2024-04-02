@@ -15,7 +15,9 @@ pub struct RaidTeam {
 
     team_name: Option<String>,
     raid_lead: Option<String>,
+    raid_lead_id: Option<id::UserId>,
     raid_colead: Option<String>,
+    raid_colead_id: Option<id::UserId>,
     raid_days: Option<String>,
     raid_time: Option<String>,
     achievement: Option<String>,
@@ -42,8 +44,18 @@ impl CreateRaidTeam {
         self
     }
 
+    pub fn raid_lead_id(mut self, raid_lead_id: impl Into<id::UserId>) -> Self {
+        self.0.raid_lead_id = Some(raid_lead_id.into());
+        self
+    }
+
     pub fn raid_colead(mut self, raid_colead: impl Into<String>) -> Self {
         self.0.raid_colead = Some(raid_colead.into());
+        self
+    }
+
+    pub fn raid_colead_id(mut self, raid_colead_id: impl Into<id::UserId>) -> Self {
+        self.0.raid_colead_id = Some(raid_colead_id.into());
         self
     }
 
@@ -147,9 +159,19 @@ pub fn create_team_info_aggregate(teams: Vec<CreateRaidTeam>) -> CreateEmbed {
 
         let mut body = String::new();
 
-        let mut lead_aggregate = scheck(team.0.raid_lead.clone());
+        let mut lead_mention: String = String::new();
+        lead_mention.push_str("<@");
+        lead_mention.push_str(scheck(Some(team.0.raid_lead_id.clone().unwrap().to_string())).as_str());
+        lead_mention.push('>');
+
+        let mut colead_mention: String = String::new();
+        colead_mention.push_str("<@");
+        colead_mention.push_str(scheck(Some(team.0.raid_colead_id.clone().unwrap().to_string())).as_str());
+        colead_mention.push('>');
+
+        let mut lead_aggregate = scheck(Some(lead_mention));
         lead_aggregate.push_str(" **|** ");
-        lead_aggregate.push_str(scheck(team.0.raid_colead.clone()).as_str());
+        lead_aggregate.push_str(scheck(Some(colead_mention)).as_str());
 
         body.push_str(&subject_scheck("Lead | Colead".to_string(), Some(lead_aggregate)));
         //body.push_str(&subject_scheck("Raid Colead".to_string(), team.0.raid_colead));
