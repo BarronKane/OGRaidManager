@@ -13,11 +13,13 @@ use serenity::prelude::*;
 use serenity::all::{CreateInteractionResponse, GatewayIntents};
 use serenity::all::Interaction;
 use serenity::model::id;
+use serenity::all::ChannelType;
 
 use serenity::http::Http;
 use serenity::client::Cache;
 use serenity::http::CacheHttp;
 
+use std::any::Any;
 use std::{
     collections::HashMap,
     env::var,
@@ -80,10 +82,10 @@ impl EventHandler for Handler {
 
                     match applications {
                         Ok(apps) => {
-                            for app in apps {
+                            for mut app in apps {
                                 if id == app.id {
                                     found = true;
-                                    let reply = raid_application::construct_reply(app.stage);
+                                    let reply = raid_application::construct_reply(&mut app, None);
 
                                     let dm_check = interaction.member.clone().unwrap().user.direct_message(ctx.http.as_ref(), 
                                         CreateMessage::new()
@@ -101,7 +103,7 @@ impl EventHandler for Handler {
                                 in_apps.push(app.clone());
                                 raid_application::write_applications(in_apps).unwrap();
 
-                                let reply = raid_application::construct_reply(app.stage);
+                                let reply = raid_application::construct_reply(&mut app, None);
                                 let dm_check = interaction.member.clone().unwrap().user.direct_message(ctx.http.as_ref(), 
                                         CreateMessage::new()
                                         .add_embed(reply)
@@ -129,6 +131,69 @@ impl EventHandler for Handler {
                 }
             }
             let _ = &interaction.create_response(ctx.http.as_ref(), CreateInteractionResponse::Acknowledge).await;
+        }
+    }
+
+    async fn message(&self, ctx: serenity::all::Context, msg: Message) {
+        let ctype = msg.channel(ctx.http.clone()).await;
+
+        if msg.is_private() {
+            let mut applicationss = raid_application::read_applications();
+
+            let mut changed = false;
+
+            match applicationss {
+                Ok(mut apps) => {
+                    for mut app in 1..apps.len() {
+                        if msg.author.id == apps[app].id {
+                            if apps[app].stage != raid_application::ApplicationStage::closed {
+                                let value = msg.content.clone();
+
+                                apps[app].stage = apps[app].stage.bump();
+                                let reply = raid_application::construct_reply(&mut apps[app], Some(value));
+
+                                let dmcheck = msg.author.direct_message(ctx.http.as_ref(), 
+                                        CreateMessage::new()
+                                        .add_embed(reply))
+                                    .await;
+
+                                if apps[app].stage == raid_application::ApplicationStage::finished {
+                                    apps[app].stage = apps[app].stage.bump();
+
+                                    let fin = raid_application::construct_application(&apps[app]);
+
+                                    let chan = var("DISCORD_CHANNEL")
+                                        .expect("Missing `DISCORD_CHANNEL` env var, see README for more information.");
+
+                                    let chan_num = chan.parse::<u64>().unwrap();
+
+                                    let role_id = var("DISCORD_ROLE")
+                                        .expect("Missing `DISCORD_ROLE` env var, see README for more information.");
+
+                                    let mut content = String::new();
+                                    content.push_str("<@&");
+                                    content.push_str(role_id.as_str());
+                                    content.push_str("> New Applicant: <@");
+                                    content.push_str(apps[app].id.clone().to_string().as_str());
+                                    content.push('>');
+
+                                    let fin_reply = CreateMessage::new()
+                                        .content(content)
+                                        .add_embed(fin);
+
+                                    let msgcheck = ctx.http.send_message(serenity::all::ChannelId::from(chan_num), vec![], 
+                                        &fin_reply
+                                    ).await;
+                                }
+                            }
+                        }
+                    }
+                    let result = raid_application::write_applications(apps);
+                },
+                Err(e) => {
+                    println!("Unable to open applications file: {}", e);
+                }
+            }
         }
     }
 }
