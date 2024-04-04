@@ -116,10 +116,10 @@ pub fn construct_reply(app: &mut RaidApplication, s: Option<String>) -> CreateEm
         ApplicationStage::name => {
             let mut desc = String::new();
             desc.push_str("Thank you for your interest in joining an OG Raid Team!\n\n");
-            desc.push_str("To start, please tell me your __**character name:**__");
+            desc.push_str("To start, please tell me your **character name:**");
 
             return CreateEmbed::new()
-                .title("__Old Gods Raid Application Form__")
+                .title("Old Gods Raid Application Form")
                 .color(Colour::from_rgb(166, 0, 255))
                 .description(desc);
         },
@@ -129,7 +129,7 @@ pub fn construct_reply(app: &mut RaidApplication, s: Option<String>) -> CreateEm
                 app.character_name = s.unwrap();
             }
 
-            let desc = "__**Character's realm:**__";
+            let desc = "Character's **realm:**";
             return create_embed(desc);
         }
 
@@ -138,7 +138,7 @@ pub fn construct_reply(app: &mut RaidApplication, s: Option<String>) -> CreateEm
                 app.realm_name = s.unwrap();
             }
 
-            let desc = "__**Character's class:**__";
+            let desc = "Character's **class:**";
             return create_embed(desc);
         }
 
@@ -147,7 +147,7 @@ pub fn construct_reply(app: &mut RaidApplication, s: Option<String>) -> CreateEm
                 app.class = s.unwrap();
             }
 
-            let desc = "__**Character's specialization:**__";
+            let desc = "Character's **specialization:**";
             return create_embed(desc);
         }
 
@@ -156,7 +156,7 @@ pub fn construct_reply(app: &mut RaidApplication, s: Option<String>) -> CreateEm
                 app.specialization = s.unwrap();
             }
 
-            let desc = "__**What is your raiding availability in EST?**__";
+            let desc = "What is your raiding **availability in EST?**";
             return create_embed(desc);
         }
 
@@ -165,7 +165,7 @@ pub fn construct_reply(app: &mut RaidApplication, s: Option<String>) -> CreateEm
                 app.availability = s.unwrap();
             }
 
-            let desc = "__**Do you have a raid team preference?**__";
+            let desc = "Do you have a **raid team preference?**";
             return create_embed(desc);
         }
 
@@ -174,7 +174,7 @@ pub fn construct_reply(app: &mut RaidApplication, s: Option<String>) -> CreateEm
                 app.preferred_application = s.unwrap();
             }
 
-            let desc = "__**Do you understand this is an application of interest, and it is Raid leaders' option to reach out to you?\n\n Please type 'I understand'.**__";
+            let desc = "**Do you understand this is an application of interest, and it is Raid leaders' option to reach out to you?\n\n Please type 'I understand'.**";
             return create_embed(desc);
         }
 
@@ -183,7 +183,7 @@ pub fn construct_reply(app: &mut RaidApplication, s: Option<String>) -> CreateEm
                 app.understood = s.unwrap();
             }
 
-            let desc = "__**Thank you for your intereste!\n\nThis is still a new bot and will be improved upon over time.**__";
+            let desc = "**Thank you for your intereste!\n\nThis is still a new bot and will be improved upon over time.**";
             return create_embed(desc);
         }
 
