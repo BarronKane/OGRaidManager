@@ -165,15 +165,18 @@ impl EventHandler for Handler {
                                     let chan = var("DISCORD_CHANNEL")
                                         .expect("Missing `DISCORD_CHANNEL` env var, see README for more information.");
 
+                                    let thread = var("DISCORD_THREAD")
+                                        .expect("Missing `DISCORD_CHANNEL` env var, see README for more information.");
+
+                                    let thread_num = thread.parse::<u64>().unwrap();
+
                                     let chan_num = chan.parse::<u64>().unwrap();
 
                                     let role_id = var("DISCORD_ROLE")
                                         .expect("Missing `DISCORD_ROLE` env var, see README for more information.");
 
                                     let mut content = String::new();
-                                    content.push_str("<@&");
-                                    content.push_str(role_id.as_str());
-                                    content.push_str("> New Applicant: <@");
+                                    content.push_str("New Applicant: <@");
                                     content.push_str(apps[app].id.clone().to_string().as_str());
                                     content.push('>');
 
@@ -181,7 +184,7 @@ impl EventHandler for Handler {
                                         .content(content)
                                         .add_embed(fin);
 
-                                    let msgcheck = ctx.http.send_message(serenity::all::ChannelId::from(chan_num), vec![], 
+                                    let msgcheck = ctx.http.send_message(serenity::all::ChannelId::from(thread_num), vec![], 
                                         &fin_reply
                                     ).await;
                                 }
