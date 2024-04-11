@@ -4,6 +4,8 @@ mod modals;
 mod raid_team_io;
 mod raid_application;
 
+use ogrm;
+
 use serenity::async_trait;
 use serenity::builder::{CreateAttachment, CreateEmbed, CreateEmbedFooter, CreateMessage};
 use serenity::model::channel::Message;
@@ -202,7 +204,7 @@ impl EventHandler for Handler {
 }
 
 fn main() {
-    scoped_main();
+    //scoped_main();
 }
 
 #[tokio::main]
