@@ -9,3 +9,6 @@ Cargo.lock
 
 # Ignore python environment.
 env/
+
+# Ignore database development items.
+migrations/

@@ -9,3 +9,8 @@ crate-type=["dylib"]
 path = "ogrm.rs"
 
 [dependencies]
+fusion-util = { path = "../../lib/fusion-util" }
+
+serde = "1.0.197"
+serde_json = "1.0.115"
+diesel = { version = "2.1.5", features = ["postgres"] }
