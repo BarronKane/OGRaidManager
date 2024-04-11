@@ -51,5 +51,5 @@ pub fn establish_connection() -> PgConnection {
     db_url.push('/');
     db_url.push_str(&config.name);
 
-
+    PgConnection::establish(&db_url).unwrap_or_else(|_| panic!("Error connecting to {}", db_url))
 }

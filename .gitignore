@@ -12,3 +12,4 @@ env/
 
 # Ignore database development items.
 migrations/
+diesel.toml
