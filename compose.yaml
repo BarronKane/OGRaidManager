@@ -5,8 +5,8 @@ services:
   psql:
     image: postgres
     environment:
-      postgres_user: postgres
-      postgres_password: develop
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: develop
     volumes:
       - psql:/var/lib/postgresql/data
     ports:
