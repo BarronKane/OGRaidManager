@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "crates/lib/fusion-util",
+    "crates/lib/ogrm",
 
     "crates/bin/raid-manager",
 
