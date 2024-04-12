@@ -13,3 +13,6 @@ env/
 # Ignore database development items.
 migrations/
 diesel.toml
+
+# Ignore config files.
+resources/config.json
