@@ -205,6 +205,8 @@ impl EventHandler for Handler {
 
 fn main() {
     //scoped_main();
+
+    let test = ogrm::establish_connection();
 }
 
 #[tokio::main]
