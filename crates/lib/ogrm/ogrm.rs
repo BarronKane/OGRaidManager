@@ -1,6 +1,9 @@
 #[path = "db/db.rs"]
 mod db;
 
+#[path = "guild/guild.rs"]
+mod guild;
+
 mod config;
 
 use diesel::pg::PgConnection;
