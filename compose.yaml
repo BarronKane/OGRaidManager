@@ -1,13 +1,27 @@
-version: '3'
+version: '3.8'
 volumes:
   psql:
+  pgad:
 services:
-  psql:
+  db:
     image: postgres
+    container_name: PostgreSQL
+    restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: develop
     volumes:
       - psql:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgAdmin
+    restart: always
     ports:
-      - 5555:5432
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: walance@pvas.me
+      PGADMIN_DEFAULT_PASSWORD: develop
+    volumes:
+      - pgad:/var/lib/pgadmin
