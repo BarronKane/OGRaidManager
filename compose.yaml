@@ -21,7 +21,7 @@ services:
     ports:
       - "8888:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: walance@pvas.me
+      PGADMIN_DEFAULT_EMAIL: develop@ogrm.com
       PGADMIN_DEFAULT_PASSWORD: develop
     volumes:
       - pgad:/var/lib/pgadmin
