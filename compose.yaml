@@ -25,3 +25,10 @@ services:
       PGADMIN_DEFAULT_PASSWORD: develop
     volumes:
       - pgad:/var/lib/pgadmin
+  ogrm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/ogrm
+    tty: true
