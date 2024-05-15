@@ -8,7 +8,7 @@ use crate::guild::schema::raidteams;
 #[derive(Queryable, /*Selectable,*/ Identifiable, PartialEq, Debug, Clone)]
 #[diesel(table_name = guilds)]
 pub struct Guilds {
-    pub id: i64,
+    pub id: id::GuildId,
 
     pub guild_id: id::GuildId
 }
