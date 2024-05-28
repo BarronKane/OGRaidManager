@@ -1,18 +1,22 @@
+// @generated automatically by Diesel CLI.
+
 diesel::table! {
-    guilds {
-        id -> BigInt,
-        guild_id -> BigInt,
+    guilds (id) {
+        id -> Int8,
     }
 }
 
 diesel::table! {
     raidteams (id) {
-        id -> BigInt,
-        guild_id -> BigInt,
+        id -> Int8,
+        guild_id -> Int8,
         team_name -> Text,
     }
 }
 
 diesel::joinable!(raidteams -> guilds (guild_id));
 
-diesel::allow_tables_to_appear_in_same_query!(guilds, raidteams,);
+diesel::allow_tables_to_appear_in_same_query!(
+    guilds,
+    raidteams,
+);
