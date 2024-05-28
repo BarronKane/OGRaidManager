@@ -22,6 +22,8 @@ popd
 robocopy .\resources .\target\debug /mt
 robocopy .\resources .\target\release /mt
 
+cargo install diesel_cli --no-default-features --features postgres
+
 goto :EOF 
 
 :ISPOWERSHELL 

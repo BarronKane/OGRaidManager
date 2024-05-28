@@ -9,3 +9,6 @@ mkdir -p target/release
 
 cp resources/* target/debug/
 cp resources/* target/release/
+
+cargo install diesel_cli --no-default-features --features postgres
+

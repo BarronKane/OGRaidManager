@@ -48,3 +48,11 @@ pub fn establish_connection() -> PgConnection {
         }
     }
 }
+
+pub fn init_tables(con: PgConnection) {
+    
+}
+
+pub fn write_test_data(con: PgConnection) {
+
+}
