@@ -26,7 +26,7 @@ pub fn read_config() -> Secrets {
     let mut contents = String::new();
     file_content.read_to_string(&mut contents).expect("Unable to read secrets file.");
 
-    let config: Config = serde_json::from_str(&contents).expect("Unable to populate secrets struct.");
+    let secrets: Secrets = serde_json::from_str(&contents).expect("Unable to populate secrets struct.");
 
-    config
+    secrets
 }
