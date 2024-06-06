@@ -3,6 +3,7 @@ pub mod raid_team;
 mod modals;
 mod raid_team_io;
 mod raid_application;
+mod secrets;
 
 use ogrm;
 
@@ -162,20 +163,11 @@ impl EventHandler for Handler {
                                 if apps[app].stage == raid_application::ApplicationStage::finished {
                                     apps[app].stage = apps[app].stage.bump();
 
+                                    let secrets = secrets::read_config();
+
                                     let fin = raid_application::construct_application(&apps[app]);
 
-                                    let chan = var("DISCORD_CHANNEL")
-                                        .expect("Missing `DISCORD_CHANNEL` env var, see README for more information.");
-
-                                    let thread = var("DISCORD_THREAD")
-                                        .expect("Missing `DISCORD_CHANNEL` env var, see README for more information.");
-
-                                    let thread_num = thread.parse::<u64>().unwrap();
-
-                                    let chan_num = chan.parse::<u64>().unwrap();
-
-                                    let role_id = var("DISCORD_ROLE")
-                                        .expect("Missing `DISCORD_ROLE` env var, see README for more information.");
+                                    let thread_num = secrets.applicant_channel.parse::<u64>().unwrap();
 
                                     let mut content = String::new();
                                     content.push_str("New Applicant: <@");
@@ -273,12 +265,12 @@ async fn scoped_main() {
         .options(options)
         .build();
 
-    let token = var("DISCORD_TOKEN")
-        .expect("Missing `DISCORD_TOKEN` env var, see README for more information.");
+    let secrets = secrets::read_config();
+
     let intents =
         GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
 
-    let client = serenity::all::ClientBuilder::new(token.clone(), intents)
+    let client = serenity::all::ClientBuilder::new(secrets.token.clone(), intents)
         .framework(framework)
         .event_handler(Handler)
         .await;
